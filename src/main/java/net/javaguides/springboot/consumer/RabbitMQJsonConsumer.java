@@ -31,7 +31,18 @@ public class RabbitMQJsonConsumer {
         LOGGER.info(String.format("Received JSON message -> %s", user.toString()));
 
         user.setDateSent(new Date()); // burada tarih bilgisi atanıyor
-        user.setStatus(UserStatus.PASSIVE); // burada enum değeri atanıyor
+//        user.setStatus(UserStatus.ACTIVE); // burada enum değeri atanıyor
+
+        if (user.getStatus() != null) {
+            try {
+                UserStatus status = UserStatus.valueOf(user.getStatus().name().toUpperCase());
+                user.setStatus(status);
+            } catch (IllegalArgumentException ex) {
+                LOGGER.error("Error while converting status string to enum: {}", ex.getMessage());
+                return;
+            }
+        }
+
 
 
         long unixTime = user.getDateSent().getTime();
