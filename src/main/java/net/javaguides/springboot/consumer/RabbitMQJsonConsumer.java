@@ -1,5 +1,7 @@
 package net.javaguides.springboot.consumer;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.javaguides.springboot.dto.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,18 +26,23 @@ public class RabbitMQJsonConsumer {
     public void consumeJsonMessage(User user){
         LOGGER.info(String.format("Received JSON message -> %s", user.toString()));
 
+        // User objesini JSON formatına dönüştürme işlemi
+        ObjectMapper mapper = new ObjectMapper();
+        String userJson = "";
+        try {
+            userJson = mapper.writeValueAsString(user);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("Error while converting User object to JSON", e);
+            return;
+        }
+
         // E-posta gönderme işlemi
         SimpleMailMessage message = new SimpleMailMessage();
         message.setTo("bagdatmutlu@gmail.com");
         message.setSubject("Yeni mesaj alındı!");
-        message.setText("Yeni bir JSON mesajı alındı: " + user.toString());
+        message.setText("Yeni bir JSON mesajı alındı: " + userJson);
         message.setReplyTo(emailFrom);
         javaMailSender.send(message);
     }
 
-
-//    @RabbitListener(queues = {"${rabbitmq.queue.json.name}"})
-//    public void consumeJsonMessage(User user){
-//        LOGGER.info(String.format("Received JSON message -> %s", user.toString()));
-//    }
 }
