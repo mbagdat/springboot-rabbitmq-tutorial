@@ -1,12 +1,19 @@
 package net.javaguides.springboot.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import net.javaguides.springboot.enumuration.UserStatus;
+import org.springframework.data.redis.core.RedisHash;
 
+import java.io.Serializable;
 import java.util.Date;
 
 @Data
-public class User {
+@AllArgsConstructor
+@NoArgsConstructor
+@RedisHash("User")
+public class User implements Serializable {
     private int id;
     private String firstName;
     private String lastName;
